@@ -119,11 +119,6 @@ public class Interaction : MonoBehaviour
         obj.transform.SetParent(null);
     }
 
-    public static void SetCurrent()
-    {
-
-    }
-
     public static bool IsHolding()
     {
         GenericInteraction obj = guide.GetComponentInChildren<GenericInteraction>();
