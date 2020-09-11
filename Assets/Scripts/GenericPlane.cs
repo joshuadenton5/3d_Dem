@@ -53,23 +53,23 @@ public class GenericPlane : MonoBehaviour, IInteract
         }
     }
 
-    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, GenericInteraction obj, Vector3 pos)
+    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, GenericInteraction obj, Vector3 pos) //exeprimental function that drops items in an ordered fashion
     {
-        List<GenericInteraction> itemsAndUtensil = new List<GenericInteraction> {obj};    
+        List<GenericInteraction> tempList = new List<GenericInteraction> {obj}; //temp list, adding all items accociated with this cell
         foreach (GenericInteraction inter in interactions)
-            itemsAndUtensil.Add(inter);
+            tempList.Add(inter);
 
         int i = 0;
-        while(i < itemsAndUtensil.Count)
+        while(i < tempList.Count)
         {
-            StartCoroutine(Interaction.DelayThePhysics(pos, itemsAndUtensil[i]));
+            StartCoroutine(Interaction.DelayThePhysics(pos, tempList[i])); //could use yield return
             i++;
-            yield return new WaitForSeconds(.3f);
+            yield return new WaitForSeconds(.3f); //arbitrary value.. could be chanaged
         }
         yield return null;
     }
 
-    private Cell MoveTo(Cell[,] _cells, Vector3 clickPoint)
+    private Cell MoveTo(Cell[,] _cells, Vector3 clickPoint) //function that moves item in hand to cell position 
     {
         float distance = float.MaxValue;
         Cell cell = new Cell();
@@ -82,7 +82,7 @@ public class GenericPlane : MonoBehaviour, IInteract
                 cell = c;
             }
         }
-        if (!cell.Taken())
+        if (!cell.Taken()) //checking if there is already an item placed on the cell
         {
             cell.SetOccupied(true);
             return cell;
@@ -90,7 +90,7 @@ public class GenericPlane : MonoBehaviour, IInteract
         return null;
     }
 
-    void PlaceCells(Transform trans)
+    void PlaceCells(Transform trans) //spawing the cells on load
     {
         Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
         float x = trans.localScale.x;
@@ -101,8 +101,8 @@ public class GenericPlane : MonoBehaviour, IInteract
         {
             for(int j = 0; j < x; j++)
             {
-                Vector3 startPos = trans.position + (trans.forward * z / 2) - (trans.right * x / 2) + (trans.right / 2) - (transform.forward / 2);
-                Vector3 newPos = startPos - (transform.forward * i) + (transform.right * j) + top;
+                Vector3 startPos = trans.position + (trans.forward * z / 2) - (trans.right * x / 2) + (trans.right / 2) - (transform.forward / 2); //starting at the top right of the object
+                Vector3 newPos = startPos - (transform.forward * i) + (transform.right * j) + top; //moving according to dimensions 
                 Cell c = new Cell();
                 c.SetPosition(newPos);
                 cells[j, i] = c;
