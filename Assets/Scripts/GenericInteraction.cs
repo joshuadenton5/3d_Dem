@@ -48,7 +48,7 @@ public class GenericInteraction : MonoBehaviour,IInteract
 
     public virtual void CheckForUtensil()
     {
-        Debug.Log("This aint a pan mate");
+        Debug.Log("Can't do that");
     }
 
     public bool GetHolding()

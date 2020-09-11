@@ -64,7 +64,7 @@ public class GenericPlane : MonoBehaviour, IInteract
         {
             StartCoroutine(Interaction.DelayThePhysics(pos, tempList[i])); //could use yield return
             i++;
-            yield return new WaitForSeconds(.3f); //arbitrary value.. could be chanaged
+            yield return new WaitForSeconds(.15f); //arbitrary value.. could be chanaged
         }
         yield return null;
     }

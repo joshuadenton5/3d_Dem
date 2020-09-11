@@ -21,21 +21,37 @@ public class Utensil : GenericInteraction
         if (!Interaction.IsHolding()) //not holding an object
         {
             base.CheckHolding();
-            if (localCell.interactions.Count > 0)
+            if (localCell.interactions.Count > 0) //if this item has other items associated with it 
             {
-                foreach (GenericInteraction gen in localCell.interactions)
+                /*foreach (GenericInteraction gen in localCell.interactions) //considering a different approach.. 
                 {
                     gen.DisableRb();
                     gen.SetColliderTrigger(true);
                     StartCoroutine(Interaction.OnPickUp(gen.transform));
-                }
+                }*/
+                StartCoroutine(DelayedPickUp(localCell.interactions));
             }
         }
         else
         {
             CheckForUtensil();
         }
-        //base.OnLeftMouseButton(hit);       
+    }
+
+    private IEnumerator DelayedPickUp(List<GenericInteraction> interactions)
+    {
+        int i = 0;
+        do
+        {
+            yield return new WaitForSeconds(.3f);
+            interactions[i].DisableRb();
+            interactions[i].SetColliderTrigger(true);
+            StartCoroutine(Interaction.OnPickUp(interactions[i].transform));
+            i++;
+
+        } while (i < interactions.Count);
+       
+        yield return null;
     }
 
     public override void CheckForUtensil()

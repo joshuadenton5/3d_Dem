@@ -71,11 +71,13 @@ public class Interaction : MonoBehaviour
         //isMoving = true;
         isHolding = false;
         float counter = 0;
+        Quaternion q = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
         Vector3 startPos = fromPos.position;
         while (counter < dur)
         {
             counter += Time.deltaTime;
             fromPos.position = Vector3.Lerp(startPos, toPos, counter / dur);
+            fromPos.rotation = Quaternion.Slerp(fromPos.rotation, q, counter / dur);
             yield return null;
         }
         yield return new WaitForSeconds(.1f);
@@ -99,7 +101,7 @@ public class Interaction : MonoBehaviour
     public static IEnumerator DelayThePhysics(Vector3 pos, GenericInteraction obj)
     {
         obj.transform.SetParent(null);
-        yield return Rotate(obj.transform, .05f);
+        //yield return Rotate(obj.transform, .01f);
         yield return PutDown(obj.transform, pos, .2f);
         obj.SetColliderTrigger(false);
         obj.EnableRb();
