@@ -9,8 +9,7 @@ public class GenericInteraction : MonoBehaviour,IInteract
     private Cell surfaceCell;
 
     protected Cell localCell;
-    public int genericCookTime = 39;
-    private int test;
+    public int genericCookTime = 30;
 
     public virtual void Start()
     {

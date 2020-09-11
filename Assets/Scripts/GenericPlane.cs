@@ -8,7 +8,6 @@ public class GenericPlane : MonoBehaviour, IInteract
     private Cell[,] cells;
     public GameObject dot;
     private Vector3 yDist;
-    private float test;
 
     public virtual void Start()
     {
