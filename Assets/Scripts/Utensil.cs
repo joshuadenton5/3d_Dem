@@ -22,17 +22,11 @@ public class Utensil : GenericInteraction
         {
             base.CheckHolding();
             if (localCell.interactions.Count > 0) //if this item has other items associated with it 
-            {
-                /*foreach (GenericInteraction gen in localCell.interactions) //considering a different approach.. 
-                {
-                    gen.DisableRb();
-                    gen.SetColliderTrigger(true);
-                    StartCoroutine(Interaction.OnPickUp(gen.transform));
-                }*/
+            {             
                 StartCoroutine(DelayedPickUp(localCell.interactions));
             }
         }
-        else
+        else //check to see if itmes can be placed on this object
         {
             CheckForUtensil();
         }

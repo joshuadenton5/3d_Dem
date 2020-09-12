@@ -19,12 +19,12 @@ public class GenericInteraction : MonoBehaviour,IInteract
 
     protected virtual void CheckHolding()
     {
-        if (surfaceCell != null)
+        if (surfaceCell != null) //surface cell is the position connected to this item 
         {
-            surfaceCell.SetOccupied(false);
+            surfaceCell.SetOccupied(false); //setting to false as the item is being picked up
             if (surfaceCell.interactions.Contains(this))
             {
-                surfaceCell.interactions.Remove(this);
+                surfaceCell.interactions.Remove(this); //removing the relationship from the cell
             }
             SetSurfaceCell(null);
         }
