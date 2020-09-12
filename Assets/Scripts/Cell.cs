@@ -27,4 +27,9 @@ public class Cell
     {
         return position;
     }
+
+    public void RemoveInteraction(GenericInteraction interaction)
+    {
+        interactions.Remove(interaction);
+    }
 }

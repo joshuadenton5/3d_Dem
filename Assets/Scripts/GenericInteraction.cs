@@ -8,7 +8,7 @@ public class GenericInteraction : MonoBehaviour,IInteract
     private Rigidbody rb;
     private Cell surfaceCell;
 
-    protected Cell localCell;
+    protected Cell localCell; //This is the position that 
     public int genericCookTime = 30;
 
     public virtual void Start()
@@ -24,7 +24,7 @@ public class GenericInteraction : MonoBehaviour,IInteract
             surfaceCell.SetOccupied(false); //setting to false as the item is being picked up
             if (surfaceCell.interactions.Contains(this))
             {
-                surfaceCell.interactions.Remove(this); //removing the relationship from the cell
+                surfaceCell.RemoveInteraction(this); //removing the relationship from the cell
             }
             SetSurfaceCell(null);
         }
