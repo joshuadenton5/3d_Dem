@@ -11,7 +11,6 @@ public interface IInteract
 public class Interaction : MonoBehaviour
 {
     public static Transform guide;
-    //public Image retical;
     IInteract interact;
     private static bool isHolding;
 
