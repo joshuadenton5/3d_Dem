@@ -11,24 +11,23 @@ public class CookingStove : GenericPlane
 
     public override void OnLeftMouseButton(RaycastHit hit)
     {
-        if(Interaction.IsHolding())
+        if(Interaction.Holding())
         {
-            GenericInteraction obj = Interaction.GetCurrent();
+            List<GenericInteraction> objs = Interaction.GetCurrent();
             base.GetCellAndMove(hit);
             int timeToCook = 0;          
-            if(obj.tag == "Utensil")
+            foreach(GenericInteraction i in objs)
             {
-                Cell cell = obj.LocalCell();
-                if (cell.interactions.Count > 0)
+                if(i.tag == "Utensil")
                 {
-                    timeToCook += obj.genericCookTime * cell.interactions.Count;
+                    timeToCook += i.genericCookTime * objs.Count;
                 }
                 else
                 {
                     Debug.Log("Nothing in the pan!!");
                 }
-            }        
-            Debug.Log(timeToCook);
+            }            
+            Debug.Log("time to cook: " + timeToCook);
         }
     }
 }

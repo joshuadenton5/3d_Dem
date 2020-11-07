@@ -5,6 +5,7 @@ using UnityEngine;
 public class GenericPlane : MonoBehaviour, IInteract
 {
     private float ratio;
+    [SerializeField]
     private Cell[,] cells;
     public GameObject dot;
     private Vector3 yDist;
@@ -17,7 +18,7 @@ public class GenericPlane : MonoBehaviour, IInteract
 
     public virtual void OnLeftMouseButton(RaycastHit hit)
     {
-        if(Interaction.IsHolding()) //holding an object 
+        if(Interaction.Holding()) //holding an object 
         {
             GetCellAndMove(hit);
         }
@@ -28,29 +29,31 @@ public class GenericPlane : MonoBehaviour, IInteract
         Cell cellPos = MoveTo(cells, hit.point);
         if (cellPos != null)//position is not taken
         {
-            GenericInteraction obj = Interaction.GetCurrent();
-            Vector3 buffer = new Vector3(0, obj.transform.localScale.y / 2f, 0);
-            buffer += yDist;
-            obj.SetSurfaceCell(cellPos);
-            //needs reviewing 
-            if(obj.LocalCell() != null)
-                StartCoroutine(DelayedDrop(obj.LocalCell().interactions, obj, cellPos.Position() + buffer));
-            else
-                StartCoroutine(Interaction.DelayThePhysics(cellPos.Position() + yDist, obj));
+            //Vector3 buffer = new Vector3(0, obj.transform.localScale.y / 2f, 0);
+            //buffer += yDist;
+            StartCoroutine(Interaction.DelayThePhysics(cellPos.Position() + yDist, Interaction.GetCurrent()));
+            foreach (GenericInteraction i in Interaction.GetCurrent())
+            {
+                i.SetSurfaceCell(cellPos);
+            }         
         }
         else
         {
-            string s = "HelloWorld";
-            string newS = "";
-
-            //reversing a string 
-            for(int i = s.Length - 1; i >= 0; i--)
-            {
-                newS += s[i];
-            }
-            Debug.Log(newS);
             Debug.Log("This slot is taken!!");
         }
+    }
+
+    private static void RevString()
+    {
+        string s = "HelloWorld";
+        string newS = "";
+
+        //reversing a string 
+        for (int i = s.Length - 1; i >= 0; i--)
+        {
+            newS += s[i];
+        }
+        Debug.Log(newS);
     }
 
     private IEnumerator DelayedDrop(List<GenericInteraction> interactions, GenericInteraction obj, Vector3 pos) //exeprimental function that drops items in an ordered fashion
@@ -62,9 +65,9 @@ public class GenericPlane : MonoBehaviour, IInteract
         int i = 0;
         while(i < tempList.Count)
         {
-            StartCoroutine(Interaction.DelayThePhysics(pos, tempList[i])); //could use yield return
+            //StartCoroutine(Interaction.DelayThePhysics(pos, tempList[i])); //could use yield return
             i++;
-            yield return new WaitForSeconds(.15f); //arbitrary value.. could be chanaged
+            yield return new WaitForSeconds(.15f); //arbitrary value.. could be changed
         }
         yield return null;
     }

@@ -8,16 +8,17 @@ public class GenericInteraction : MonoBehaviour,IInteract
     private Rigidbody rb;
     private Cell surfaceCell;
 
-    protected Cell localCell; //This is the position that 
+    protected Guide guide;
     public int genericCookTime = 30;
 
     public virtual void Start()
     {
+        guide = FindObjectOfType<Guide>();
         collider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
     }
 
-    protected virtual void CheckHolding()
+    protected virtual void NothingInHand()
     {
         if (surfaceCell != null) //surface cell is the position connected to this item 
         {
@@ -28,17 +29,17 @@ public class GenericInteraction : MonoBehaviour,IInteract
             }
             SetSurfaceCell(null);
         }
-        StartCoroutine(Interaction.OnPickUp(transform));
         DisableRb();
         SetColliderTrigger(true);
-        transform.SetParent(Interaction.GetGuide());
+        transform.SetParent(guide.GetTransform());
+        StartCoroutine(Interaction.OnPickUp(this));
     }
 
     public virtual void OnLeftMouseButton(RaycastHit hit)
     {
-        if (!Interaction.IsHolding()) //checking if an object is being held
+        if (!Interaction.Holding()) //checking if an object is not being held
         {
-            CheckHolding();
+            NothingInHand();
         }
         else
         {
@@ -53,7 +54,7 @@ public class GenericInteraction : MonoBehaviour,IInteract
 
     public bool GetHolding()
     {
-        return Interaction.IsHolding();
+        return Interaction.Holding();
     }
 
     public Cell SurfaceCell()
@@ -69,11 +70,6 @@ public class GenericInteraction : MonoBehaviour,IInteract
     public void SetColliderTrigger(bool set)
     {
         collider.isTrigger = set;
-    }
-
-    public Cell LocalCell()
-    {
-        return localCell;
     }
 
     public void DisableRb()

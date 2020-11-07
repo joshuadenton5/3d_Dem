@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cell 
+[System.Serializable]
+public class Cell
 {
     private Vector3 position;
+    [SerializeField]
     private bool isTaken;
+    
+    [SerializeField]
     public List<GenericInteraction> interactions = new List<GenericInteraction>();
 
     public void SetPosition(Vector3 pos)

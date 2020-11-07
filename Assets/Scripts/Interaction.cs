@@ -10,13 +10,16 @@ public interface IInteract
 
 public class Interaction : MonoBehaviour
 {
-    public static Transform guide;
-    IInteract interact;
+    public static Guide _guide;
+    //public static Transform guide;
+    private IInteract interact;
     private static bool isHolding;
+    private GenericInteraction current;
 
     void Start()
     {
-        guide = transform.Find("Guide");
+        //guide = transform.Find("Guide");
+        _guide = GetComponentInChildren<Guide>();
         //retical.color = Color.white;
     }
 
@@ -43,24 +46,27 @@ public class Interaction : MonoBehaviour
         }
     }
 
-    public static IEnumerator OnPickUp(Transform fromPos)
+    public static IEnumerator OnPickUp(GenericInteraction fromPos)
     {
+        _guide.AddInteraction(fromPos);
         yield return PickUp(fromPos, .2f);
     }
 
-    public static IEnumerator PickUp(Transform fromPos, float dur) 
+    public static IEnumerator PickUp(GenericInteraction fromPos, float dur) 
     {
         float counter = 0;
-        fromPos.rotation = guide.rotation;
-        Vector3 startPos = fromPos.position;
+        //fromPos.rotation = guide.rotation;
+        fromPos.transform.rotation = _guide.GetTransform().rotation;
+        Vector3 startPos = fromPos.transform.position;
         while (counter < dur)
         {
             counter += Time.deltaTime;
-            fromPos.position = Vector3.Lerp(startPos, guide.position, counter / dur); //guide - so the object will always end up in the same position
+            fromPos.transform.position = Vector3.Lerp(startPos, _guide.GetTransform().position, counter / dur); //guide - so the object will always end up in the same position
             //update toPos in case its changed 
             yield return null;
         }
-        fromPos.SetParent(guide);
+        fromPos.transform.SetParent(_guide.GetTransform());
+        //_guide.AddInteraction(fromPos);
         isHolding = true;
         yield return new WaitForSeconds(.01f);
     }
@@ -97,35 +103,29 @@ public class Interaction : MonoBehaviour
         yield return new WaitForSeconds(.1f);
     }
 
-    public static IEnumerator DelayThePhysics(Vector3 pos, GenericInteraction obj)
+    public static IEnumerator DelayThePhysics(Vector3 pos, List<GenericInteraction> objs)
     {
-        obj.transform.SetParent(null);
-        //yield return Rotate(obj.transform, .01f);
-        yield return PutDown(obj.transform, pos, .2f);
-        obj.SetColliderTrigger(false);
-        obj.EnableRb();
-    }
-
-    public static IEnumerator FollowParent()
-    {
-        yield return null;
+        foreach(GenericInteraction i in objs)
+        {
+            i.transform.SetParent(null);
+            //yield return Rotate(obj.transform, .01f);
+            yield return PutDown(i.transform, pos, .2f);
+            i.SetColliderTrigger(false);
+            i.EnableRb();
+        }
+        GetCurrent().Clear();
     }
 
     public void OnDrop()
     {
         isHolding = false;
-        GenericInteraction obj = GetCurrent();
-        obj.EnableRb();
-        obj.SetColliderTrigger(false);
-        obj.transform.SetParent(null);
-    }
-
-    public static bool IsHolding()
-    {
-        GenericInteraction obj = guide.GetComponentInChildren<GenericInteraction>();
-        if (obj != null)
-            return true;
-        return false;
+        foreach(GenericInteraction i in GetCurrent())
+        {
+            i.EnableRb();
+            i.SetColliderTrigger(false);
+            i.transform.SetParent(null);
+        }
+        GetCurrent().Clear();
     }
 
     public static bool Holding()
@@ -133,18 +133,13 @@ public class Interaction : MonoBehaviour
         return isHolding;
     }
 
-    public static GenericInteraction GetCurrent()
+    public static List<GenericInteraction> GetCurrent()
     {
-        GenericInteraction obj = guide.GetComponentInChildren<GenericInteraction>();
-        if(obj != null)
-        {           
-            return obj;
-        }
-        return null;
+        return _guide.Interactions();
     }
 
-    public static Transform GetGuide()
+    public static Guide GetGuide()
     {
-        return guide;
+        return _guide;
     }
 }
