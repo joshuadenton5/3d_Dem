@@ -9,16 +9,18 @@ public class GenericPlane : MonoBehaviour, IInteract
     private Cell[,] cells;
     public GameObject dot;
     private Vector3 yDist;
+    protected Interaction interaction;
 
     public virtual void Start()
     {
         yDist = new Vector3(0, .15f, 0);
+        interaction = FindObjectOfType<Interaction>();
         PlaceCells(transform);
     }
 
     public virtual void OnLeftMouseButton(RaycastHit hit)
     {
-        if(Interaction.Holding()) //holding an object 
+        if(interaction.Holding()) //holding an object 
         {
             GetCellAndMove(hit);
         }
@@ -26,48 +28,38 @@ public class GenericPlane : MonoBehaviour, IInteract
 
     protected virtual void GetCellAndMove(RaycastHit hit)
     {
-        Cell cellPos = MoveTo(cells, hit.point);
-        if (cellPos != null)//position is not taken
+        Cell cell = MoveTo(cells, hit.point);
+        if (cell != null)//position is not taken
         {
-            //Vector3 buffer = new Vector3(0, obj.transform.localScale.y / 2f, 0);
-            //buffer += yDist;
-            StartCoroutine(Interaction.DelayThePhysics(cellPos.Position() + yDist, Interaction.GetCurrent()));
-            foreach (GenericInteraction i in Interaction.GetCurrent())
+            if(interaction.Currents().Count > 1)//if the player is holding more than one item 
             {
-                i.SetSurfaceCell(cellPos);
-            }         
+                StartCoroutine(DelayedDrop(interaction.Currents(), cell));
+            }
+            else
+            {
+                GenericInteraction current = interaction.Currents()[0];
+                Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
+                buffer += yDist;
+                StartCoroutine(interaction.OnPutDown(current, cell, buffer));
+            }           
         }
         else
         {
             Debug.Log("This slot is taken!!");
-        }
+        }       
     }
 
-    private static void RevString()
+    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell pos) //experimental function that drops items in an ordered fashion
     {
-        string s = "HelloWorld";
-        string newS = "";
+        List<GenericInteraction> tempList = new List<GenericInteraction>(); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
+        foreach (GenericInteraction gi in interactions) tempList.Add(gi);
 
-        //reversing a string 
-        for (int i = s.Length - 1; i >= 0; i--)
+        for (int i = 0; i < tempList.Count; i++)
         {
-            newS += s[i];
-        }
-        Debug.Log(newS);
-    }
-
-    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, GenericInteraction obj, Vector3 pos) //exeprimental function that drops items in an ordered fashion
-    {
-        List<GenericInteraction> tempList = new List<GenericInteraction> {obj}; //temp list, adding all items accociated with this cell
-        foreach (GenericInteraction inter in interactions)
-            tempList.Add(inter);
-
-        int i = 0;
-        while(i < tempList.Count)
-        {
-            //StartCoroutine(Interaction.DelayThePhysics(pos, tempList[i])); //could use yield return
-            i++;
-            yield return new WaitForSeconds(.15f); //arbitrary value.. could be changed
+            Vector3 buffer = new Vector3(0, tempList[i].transform.localScale.y / 2f, 0);
+            buffer += yDist;
+            StartCoroutine(interaction.OnPutDown(tempList[i], pos, buffer));
+            yield return new WaitForSeconds(.05f);
         }
         yield return null;
     }
@@ -93,7 +85,7 @@ public class GenericPlane : MonoBehaviour, IInteract
         return null;
     }
 
-    void PlaceCells(Transform trans) //spawing the cells on load
+    void PlaceCells(Transform trans) //spawning the cells on load
     {
         Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
         float x = trans.localScale.x;
@@ -115,6 +107,18 @@ public class GenericPlane : MonoBehaviour, IInteract
     }
 
     //unused functions
+    private static void RevString()
+    {
+        string s = "HelloWorld";
+        string newS = "";
+
+        //reversing a string 
+        for (int i = s.Length - 1; i >= 0; i--)
+        {
+            newS += s[i];
+        }
+        Debug.Log(newS);
+    }
     Vector3 GetTopPlane(Transform thisTrans, Vector3 rayPoint, float buffer)
     {
         float lowerY = thisTrans.transform.position.y - thisTrans.localScale.y / 2;

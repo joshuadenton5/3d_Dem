@@ -10,79 +10,97 @@ public interface IInteract
 
 public class Interaction : MonoBehaviour
 {
-    public static Guide _guide;
-    //public static Transform guide;
+    public static Guide guide;
     private IInteract interact;
-    private static bool isHolding;
-    private GenericInteraction current;
+
+    [SerializeField]
+    private List<GenericInteraction> currents = new List<GenericInteraction>();
+    private bool canClick = true;
 
     void Start()
     {
-        //guide = transform.Find("Guide");
-        _guide = GetComponentInChildren<Guide>();
-        //retical.color = Color.white;
+        guide = GetComponentInChildren<Guide>();
     }
 
     void Update()
     {
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, 5f))
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && canClick)
             {
                 interact = hit.collider.GetComponent<IInteract>();
                 if (interact != null)
                 {
                     interact.OnLeftMouseButton(hit);
-                    //Debug.Log(interact);
+                    canClick = false;
+                    StartCoroutine(DelayClick());
                 }
             }      
         }
         if (Input.GetMouseButtonDown(1))
         {
-            if (Holding())
-            {
-                OnDrop();
-            }
+            if (Holding()){ OnDrop(); }
         }
     }
 
-    public static IEnumerator OnPickUp(GenericInteraction fromPos)
+    private IEnumerator DelayClick()
     {
-        _guide.AddInteraction(fromPos);
-        yield return PickUp(fromPos, .2f);
+        yield return new WaitForSeconds(.6f);
+        canClick = true;
     }
 
-    public static IEnumerator PickUp(GenericInteraction fromPos, float dur) 
+    public List<GenericInteraction> Currents() { return currents; }
+
+    public IEnumerator OnPickUp(GenericInteraction current)
+    {
+        current.DisableRb();
+        current.SetColliderTrigger(true);
+        current.SurfaceCellTaken(false);
+        current.SetSurfaceCell(null);
+        currents.Add(current);
+        current.transform.SetParent(guide.transform);
+        yield return PickUp(current, 6f);
+    }
+
+    public IEnumerator OnPutDown(GenericInteraction current, Cell pos, Vector3 buff)
+    {       
+        current.SetSurfaceCell(pos);
+        currents.Remove(current);
+        current.transform.SetParent(null);
+        yield return PutDown(current.transform, pos.Position() + buff, 6f);
+        current.EnableRb();
+        current.SetColliderTrigger(false);
+    }
+
+    public static IEnumerator PickUp(GenericInteraction fromPos, float vel) 
     {
         float counter = 0;
-        //fromPos.rotation = guide.rotation;
-        fromPos.transform.rotation = _guide.GetTransform().rotation;
+        fromPos.transform.rotation = guide.transform.rotation;
         Vector3 startPos = fromPos.transform.position;
-        while (counter < dur)
+        float distance = Vector3.Distance(guide.transform.position, startPos); //distance - speed=distance/time
+        float time = distance / vel;
+        while (counter < time)
         {
             counter += Time.deltaTime;
-            fromPos.transform.position = Vector3.Lerp(startPos, _guide.GetTransform().position, counter / dur); //guide - so the object will always end up in the same position
+            fromPos.transform.position = Vector3.Slerp(startPos, guide.transform.position, counter / time); //guide - so the object will always end up in the same position
             //update toPos in case its changed 
             yield return null;
         }
-        fromPos.transform.SetParent(_guide.GetTransform());
-        //_guide.AddInteraction(fromPos);
-        isHolding = true;
         yield return new WaitForSeconds(.01f);
     }
 
-    public static IEnumerator PutDown(Transform fromPos, Vector3 toPos, float dur) 
+    public static IEnumerator PutDown(Transform fromPos, Vector3 toPos, float vel) 
     {
-        //isMoving = true;
-        isHolding = false;
         float counter = 0;
         Quaternion q = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
         Vector3 startPos = fromPos.position;
-        while (counter < dur)
+        float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
+        float time = distance / vel;
+        while (counter < time)
         {
             counter += Time.deltaTime;
-            fromPos.position = Vector3.Lerp(startPos, toPos, counter / dur);
-            fromPos.rotation = Quaternion.Slerp(fromPos.rotation, q, counter / dur);
+            fromPos.position = Vector3.Slerp(startPos, toPos, counter / time);
+            fromPos.rotation = Quaternion.Slerp(fromPos.rotation, q, counter / time);
             yield return null;
         }
         yield return new WaitForSeconds(.1f);
@@ -103,43 +121,21 @@ public class Interaction : MonoBehaviour
         yield return new WaitForSeconds(.1f);
     }
 
-    public static IEnumerator DelayThePhysics(Vector3 pos, List<GenericInteraction> objs)
-    {
-        foreach(GenericInteraction i in objs)
-        {
-            i.transform.SetParent(null);
-            //yield return Rotate(obj.transform, .01f);
-            yield return PutDown(i.transform, pos, .2f);
-            i.SetColliderTrigger(false);
-            i.EnableRb();
-        }
-        GetCurrent().Clear();
-    }
-
     public void OnDrop()
     {
-        isHolding = false;
-        foreach(GenericInteraction i in GetCurrent())
+        foreach(GenericInteraction i in currents)
         {
             i.EnableRb();
             i.SetColliderTrigger(false);
+            i.SetParent(null);
             i.transform.SetParent(null);
         }
-        GetCurrent().Clear();
+        currents.Clear();
     }
 
-    public static bool Holding()
+    public bool Holding()
     {
-        return isHolding;
-    }
-
-    public static List<GenericInteraction> GetCurrent()
-    {
-        return _guide.Interactions();
-    }
-
-    public static Guide GetGuide()
-    {
-        return _guide;
+        if (currents.Count > 0) return true;
+        return false;
     }
 }

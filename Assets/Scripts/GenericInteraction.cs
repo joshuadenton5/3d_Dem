@@ -8,36 +8,39 @@ public class GenericInteraction : MonoBehaviour,IInteract
     private Rigidbody rb;
     private Cell surfaceCell;
 
-    protected Guide guide;
+    protected Interaction interaction;
     public int genericCookTime = 30;
+
+    [SerializeField]
+    private Utensil parent;
 
     public virtual void Start()
     {
-        guide = FindObjectOfType<Guide>();
+        interaction = FindObjectOfType<Interaction>();
         collider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
     }
 
+    public virtual void CheckForParent(Utensil _parent)
+    {
+        if (_parent != null)
+        {
+            _parent.LocalCell().interactions.Remove(this);
+            _parent = null;
+        }
+    }
+
+    public void SetParent(Utensil utensil) { parent = utensil; }
+
     protected virtual void NothingInHand()
     {
-        if (surfaceCell != null) //surface cell is the position connected to this item 
-        {
-            surfaceCell.SetOccupied(false); //setting to false as the item is being picked up
-            if (surfaceCell.interactions.Contains(this))
-            {
-                surfaceCell.RemoveInteraction(this); //removing the relationship from the cell
-            }
-            SetSurfaceCell(null);
-        }
-        DisableRb();
-        SetColliderTrigger(true);
-        transform.SetParent(guide.GetTransform());
-        StartCoroutine(Interaction.OnPickUp(this));
+        CheckForParent(parent);
+        StartCoroutine(interaction.OnPickUp(this));
     }
 
     public virtual void OnLeftMouseButton(RaycastHit hit)
     {
-        if (!Interaction.Holding()) //checking if an object is not being held
+        if (!interaction.Holding()) //checking if an object is not being held
         {
             NothingInHand();
         }
@@ -52,12 +55,15 @@ public class GenericInteraction : MonoBehaviour,IInteract
         Debug.Log("Can't do that");
     }
 
-    public bool GetHolding()
+    public void SurfaceCellTaken(bool setTaken)
     {
-        return Interaction.Holding();
+        if(GetSurfaceCell() != null)
+        {
+            GetSurfaceCell().SetOccupied(setTaken);
+        }
     }
 
-    public Cell SurfaceCell()
+    public Cell GetSurfaceCell()
     {
         return surfaceCell;
     }

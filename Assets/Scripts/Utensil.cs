@@ -5,7 +5,7 @@ using UnityEngine;
 public class Utensil : GenericInteraction
 {
     [SerializeField]
-    private Cell localCell; //This is the position that.... 
+    private Cell localCell; //This is the position that objects can be placed 
     private Vector3 bottom, yDist;
     private int limit = 3;
 
@@ -15,63 +15,56 @@ public class Utensil : GenericInteraction
         bottom = new Vector3(0, -(transform.localScale.y / 2), 0);
         yDist = new Vector3(0, .15f, 0);
         localCell = new Cell();
+        localCell.interactions.Add(this);
     }
 
     public Cell LocalCell() { return localCell; }
       
     override public void OnLeftMouseButton(RaycastHit hit)
     {
-        if (!Interaction.Holding()) //not holding an object
+        if (!interaction.Holding()) //not holding an object
         {
-            base.NothingInHand();
-            if (localCell.interactions.Count > 0) //if this item has other items associated with it 
+            if (localCell.interactions.Count > 1)
             {
-                foreach (GenericInteraction i in localCell.interactions)
-                    guide.Interactions().Add(i);
                 StartCoroutine(DelayedPickUp(localCell.interactions));
             }
+            else
+            {
+                base.NothingInHand();
+            }
         }
-        else //check to see if items can be placed on this object
+        else
         {
-            CheckForUtensil();
+            if(interaction.Currents().Count > 1)
+            {
+
+            }
+            else
+            {
+                GenericInteraction current = interaction.Currents()[0];
+                current.SetParent(this);
+                Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
+                localCell.SetPosition(transform.position);
+                localCell.interactions.Add(current); //adding current to the utensils cell list 
+                StartCoroutine(interaction.OnPutDown(current, localCell, buffer + yDist));
+            }           
         }
     }
 
+    public override void CheckForParent(Utensil _parent){}
+
     public IEnumerator DelayedPickUp(List<GenericInteraction> interactions)
     {
-        int i = 0;
-        Debug.Log(interactions.Count);
-        do
+        for (int i = 0; i < interactions.Count; i++)
         {
-            yield return new WaitForSeconds(.3f);
-            interactions[i].DisableRb();
-            interactions[i].SetColliderTrigger(true);
-            StartCoroutine(Interaction.OnPickUp(interactions[i]));
-            i++;
-        } while (i < interactions.Count);
+            StartCoroutine(interaction.OnPickUp(interactions[i]));
+            yield return new WaitForSeconds(.05f);
+        }
         yield return null;
     }
 
     public override void CheckForUtensil()//if holding and looking at pan 
     {
-        if(localCell.interactions.Count < limit)
-        {
-            localCell.SetPosition(transform.position + bottom);
-            foreach(GenericInteraction i in guide.Interactions())
-            {
-                localCell.interactions.Add(i);
-                i.SetSurfaceCell(localCell);
-            }
-            Vector3 buffer = new Vector3(0, transform.position.y / 2, 0);
-            buffer += yDist;
-            StartCoroutine(Interaction.DelayThePhysics(localCell.Position() + buffer, guide.Interactions()));
-            //current.SetSurfaceCell(localCell);           
-        }
-        else
-        {
-            localCell.SetOccupied(true);
-            Debug.Log("Pan full");
-            //localCell.SetOccupied(true);
-        }
+
     }  
 }

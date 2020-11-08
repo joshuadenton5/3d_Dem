@@ -13,7 +13,6 @@ public class Guide : MonoBehaviour
     {
         
     }
-    public Transform GetTransform() { return transform; }
 
     public void AddInteraction(GenericInteraction _interaction) { interactions.Add(_interaction); }
    
