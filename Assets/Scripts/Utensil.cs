@@ -55,9 +55,10 @@ public class Utensil : GenericInteraction
 
     public IEnumerator DelayedPickUp(List<GenericInteraction> interactions)
     {
-        for (int i = 0; i < interactions.Count; i++)
+        StartCoroutine(interaction.OnPickUp(interactions[0]));
+        for (int i = 1; i < interactions.Count; i++)
         {
-            StartCoroutine(interaction.OnPickUp(interactions[i]));
+            StartCoroutine(interaction.ArcMotionPickUp(interactions[i]));
             yield return new WaitForSeconds(.05f);
         }
         yield return null;

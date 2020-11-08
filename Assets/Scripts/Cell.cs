@@ -8,13 +8,13 @@ public class Cell
     private Vector3 position;
     [SerializeField]
     private bool isTaken;
-    
+
     [SerializeField]
     public List<GenericInteraction> interactions = new List<GenericInteraction>();
 
     public void SetPosition(Vector3 pos)
     {
-        position = pos;    
+        position = pos;
     }
 
     public void SetOccupied(bool taken)

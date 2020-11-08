@@ -30,7 +30,7 @@ public class GenericInteraction : MonoBehaviour,IInteract
         }
     }
 
-    public void SetParent(Utensil utensil) { parent = utensil; }
+    public virtual void SetParent(Utensil utensil) { parent = utensil; }
 
     protected virtual void NothingInHand()
     {

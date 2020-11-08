@@ -39,7 +39,7 @@ public class GenericPlane : MonoBehaviour, IInteract
             {
                 GenericInteraction current = interaction.Currents()[0];
                 Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
-                buffer += yDist;
+                //buffer += yDist;
                 StartCoroutine(interaction.OnPutDown(current, cell, buffer));
             }           
         }
@@ -53,12 +53,13 @@ public class GenericPlane : MonoBehaviour, IInteract
     {
         List<GenericInteraction> tempList = new List<GenericInteraction>(); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
         foreach (GenericInteraction gi in interactions) tempList.Add(gi);
-
-        for (int i = 0; i < tempList.Count; i++)
+        Vector3 buff = new Vector3(0, tempList[0].transform.localScale.y / 2f, 0);
+        StartCoroutine(interaction.OnPutDown(tempList[0], pos, buff));
+        for (int i = 1; i < tempList.Count; i++)
         {
             Vector3 buffer = new Vector3(0, tempList[i].transform.localScale.y / 2f, 0);
-            buffer += yDist;
-            StartCoroutine(interaction.OnPutDown(tempList[i], pos, buffer));
+            //buffer += yDist;
+            StartCoroutine(interaction.ArcMotionPutDown(tempList[i], pos, buffer));
             yield return new WaitForSeconds(.05f);
         }
         yield return null;
