@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GenericInteraction : MonoBehaviour,IInteract
+public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInteraction>
 {
     private new Collider collider;
     private Rigidbody rb;
@@ -90,5 +91,10 @@ public class GenericInteraction : MonoBehaviour,IInteract
     {
         rb.useGravity = true;
         rb.isKinematic = false;
+    }
+
+    public bool Equals(GenericInteraction other)
+    {
+        throw new NotImplementedException();
     }
 }
