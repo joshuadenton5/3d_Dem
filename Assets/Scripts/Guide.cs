@@ -9,11 +9,6 @@ public class Guide : MonoBehaviour
     [SerializeField]
     private List<GenericInteraction> interactions = new List<GenericInteraction>();
 
-    void Start()
-    {
-        
-    }
-
     public void AddInteraction(GenericInteraction _interaction) { interactions.Add(_interaction); }
    
     public GenericInteraction GetInteraction() { return interaction; }

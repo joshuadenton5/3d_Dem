@@ -48,116 +48,50 @@ public class Interaction : MonoBehaviour
         canClick = true;
     }
 
-    public List<GenericInteraction> Currents() { return currents; }
+    public List<GenericInteraction> Currents()
+    {
+        List<GenericInteraction> tmp = new List<GenericInteraction>(currents);
+        return tmp;
+    }
 
     public IEnumerator OnPickUp(GenericInteraction current)
     {
         current.DisableRb();
         current.SetColliderTrigger(true);
-        current.SurfaceCellTaken(false);
-        current.SetSurfaceCell(null);
         currents.Add(current);
         current.transform.SetParent(guide.transform);
-        yield return PickUp(current.transform, .3f);
+        yield return Motion.PickUp(current.transform, .3f);
+    }
+
+    public IEnumerator OnPutDown(GenericInteraction current)
+    {
+        Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
+        currents.Remove(current);
+        current.transform.SetParent(null);
+        yield return Motion.PutDown(current.transform, current.Destination() + buffer, .3f);
+        current.EnableRb();
+        current.SetColliderTrigger(false);
     }
 
     public IEnumerator ArcMotionPickUp(GenericInteraction current)
     {
         current.DisableRb();
         current.SetColliderTrigger(true);
-        current.SurfaceCellTaken(false);
-        current.SetSurfaceCell(null);
         currents.Add(current);
         current.transform.SetParent(guide.transform);
-        yield return Arc(current.transform, guide.transform.position, .3f);
+        yield return Motion.ArcPickUp(current.transform, .3f);
     }
 
-    public IEnumerator OnPutDown(GenericInteraction current, Cell cell, Vector3 buff)
-    {       
-        current.SetSurfaceCell(cell);
+    public IEnumerator ArcMotionPutDown(GenericInteraction current)
+    {
+        Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
         currents.Remove(current);
         current.transform.SetParent(null);
-        yield return PutDown(current.transform, cell.Position() + buff, .3f);
+        yield return Motion.ArcPutDown(current.transform, current.Destination() + buffer, .5f);
         current.EnableRb();
         current.SetColliderTrigger(false);
     }
-
-    public IEnumerator ArcMotionPutDown(GenericInteraction current, Cell cell, Vector3 buff)
-    {
-        current.SetSurfaceCell(cell);
-        currents.Remove(current);
-        current.transform.SetParent(null);
-        yield return Arc(current.transform, cell.Position() + buff, .5f);
-        current.EnableRb();
-        current.SetColliderTrigger(false);
-    }
-
-    public static IEnumerator PickUp(Transform fromPos, float vel) 
-    {
-        float counter = 0;
-        fromPos.rotation = guide.transform.rotation;
-        Vector3 startPos = fromPos.position;
-        float distance = Vector3.Distance(guide.transform.position, startPos); //distance - speed=distance/time
-        float time = distance / vel;
-        while (counter < vel)
-        {
-            counter += Time.deltaTime;
-            fromPos.position = Vector3.Slerp(startPos, guide.transform.position, counter / vel); //guide - so the object will always end up in the same position
-            //update toPos in case its changed 
-            yield return null;
-        }
-        yield return new WaitForSeconds(.01f);
-    }
-
-    public static IEnumerator PutDown(Transform fromPos, Vector3 toPos, float vel) 
-    {
-        float counter = 0;
-        Quaternion q = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
-        Vector3 startPos = fromPos.position;
-        float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
-        float time = distance / vel;
-        while (counter < vel)
-        {
-            counter += Time.deltaTime;
-            fromPos.position = Vector3.Slerp(startPos, toPos, counter / vel);
-            fromPos.rotation = Quaternion.Slerp(fromPos.rotation, q, counter / vel);
-            yield return null;
-        }
-        yield return new WaitForSeconds(.1f);
-        //newColider = false;
-        //isMoving = false;
-    }
-
-    public static IEnumerator Arc(Transform fromPos, Vector3 toPos, float vel)
-    {
-        float counter = 0;
-        Vector3 start = fromPos.position;
-        Vector3 arc = start + (toPos - start) / 2 + Vector3.up * 1;
-        float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
-        float time = distance / vel;
-        while (counter < vel)
-        {
-            counter += Time.deltaTime;
-            Vector3 m1 = Vector3.Lerp(start, arc, counter / vel);
-            Vector3 m2 = Vector3.Lerp(arc, toPos, counter / vel);
-            fromPos.transform.position = Vector3.Lerp(m1, m2, counter / vel);
-            yield return null;
-        }
-    }
-
-    public static IEnumerator Rotate(Transform fromPos, float dur)
-    {
-        float counter = 0;
-        Quaternion q = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
-        while(counter < dur)
-        {
-            counter += Time.deltaTime;
-            fromPos.rotation = Quaternion.Slerp(fromPos.rotation, q, counter / dur);
-            yield return null;
-        }
-        yield return new WaitForSeconds(.1f);
-    }
-
+ 
     public void OnDrop()
     {
         foreach(GenericInteraction i in currents)

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GenericPlane : MonoBehaviour, IInteract
 {
-    private float ratio;
     [SerializeField]
-    private Cell[,] cells;
+    public Cell[,] cells;
+
     public GameObject dot;
     private Vector3 yDist;
     protected Interaction interaction;
@@ -38,9 +38,8 @@ public class GenericPlane : MonoBehaviour, IInteract
             else
             {
                 GenericInteraction current = interaction.Currents()[0];
-                Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
-                //buffer += yDist;
-                StartCoroutine(interaction.OnPutDown(current, cell, buffer));
+                AssignInteraction(current, cell);
+                StartCoroutine(interaction.OnPutDown(current));
             }           
         }
         else
@@ -49,17 +48,21 @@ public class GenericPlane : MonoBehaviour, IInteract
         }       
     }
 
-    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell pos) //experimental function that drops items in an ordered fashion
+    void AssignInteraction(GenericInteraction interaction, Cell cell)
     {
-        List<GenericInteraction> tempList = new List<GenericInteraction>(); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
-        foreach (GenericInteraction gi in interactions) tempList.Add(gi);
-        Vector3 buff = new Vector3(0, tempList[0].transform.localScale.y / 2f, 0);
-        StartCoroutine(interaction.OnPutDown(tempList[0], pos, buff));
-        for (int i = 1; i < tempList.Count; i++)
+        interaction.SetDesination(cell.Position());
+        interaction.SetCell(cell);
+    }
+
+    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell cell) //experimental function that drops items in an ordered fashion
+    {
+        List<GenericInteraction> tempList = new List<GenericInteraction>(interactions); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
+        tempList[0].SetDesination(cell.Position());
+        StartCoroutine(interaction.OnPutDown(tempList[0]));//placing the first element down 
+        for (int i = 1; i < tempList.Count; i++)//then placing the other items stored 
         {
-            Vector3 buffer = new Vector3(0, tempList[i].transform.localScale.y / 2f, 0);
-            //buffer += yDist;
-            StartCoroutine(interaction.ArcMotionPutDown(tempList[i], pos, buffer));
+            AssignInteraction(tempList[i], cell);
+            StartCoroutine(interaction.ArcMotionPutDown(tempList[i]));
             yield return new WaitForSeconds(.05f);
         }
         yield return null;
@@ -108,31 +111,6 @@ public class GenericPlane : MonoBehaviour, IInteract
     }
 
     //unused functions
-    private static void RevString()
-    {
-        string s = "HelloWorld";
-        string newS = "";
-
-        //reversing a string 
-        for (int i = s.Length - 1; i >= 0; i--)
-        {
-            newS += s[i];
-        }
-        Debug.Log(newS);
-    }
-    Vector3 GetTopPlane(Transform thisTrans, Vector3 rayPoint, float buffer)
-    {
-        float lowerY = thisTrans.transform.position.y - thisTrans.localScale.y / 2;
-        float yScale = thisTrans.localScale.y;
-        float dif = yScale - rayPoint.y + lowerY + buffer;
-        SetRatio((rayPoint.y - lowerY) / yScale);
-        return new Vector3(rayPoint.x, rayPoint.y + dif, rayPoint.z);
-    }
-
-    void SetRatio(float _ratio)
-    {
-        ratio = _ratio;
-    }
 
     void DrawOnGrid() //debug 
     {

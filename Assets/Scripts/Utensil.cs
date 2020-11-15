@@ -4,54 +4,67 @@ using UnityEngine;
 
 public class Utensil : GenericInteraction
 {
-    [SerializeField]
-    private Cell localCell; //This is the position that objects can be placed 
-    private Vector3 bottom, yDist;
-    private int limit = 3;
+    private Vector3 yDist;
+    private List<GenericInteraction> localInteractions = new List<GenericInteraction>(); //objects in utensil 
 
     public override void Start()
     {
         base.Start();
-        bottom = new Vector3(0, -(transform.localScale.y / 2), 0);
         yDist = new Vector3(0, .15f, 0);
-        localCell = new Cell();
-        localCell.interactions.Add(this);
+        localInteractions.Add(this);
     }
 
-    public Cell LocalCell() { return localCell; }
-      
+    public List<GenericInteraction> LocalInteractions()
+    {
+        List<GenericInteraction> tmp = new List<GenericInteraction>(localInteractions);
+        return tmp;
+    }
+
+    public void AddToLocal(GenericInteraction interaction)
+    {
+        if (interaction != null)
+            localInteractions.Add(interaction);
+    }
+    public void RemoveFromLocal(GenericInteraction interaction)
+    {
+        if(interaction!=null)
+            localInteractions.Remove(interaction);
+    }
+
     override public void OnLeftMouseButton(RaycastHit hit)
     {
         if (!interaction.Holding()) //not holding an object
         {
-            if (localCell.interactions.Count > 1)
+            if (localInteractions.Count > 1)
             {
-                StartCoroutine(DelayedPickUp(localCell.interactions));
+                StartCoroutine(DelayedPickUp(localInteractions));
             }
             else
             {
                 base.NothingInHand();
             }
         }
-        else
+        else//holding 
         {
-            if(interaction.Currents().Count > 1)
+            if (interaction.Currents().Count > 1 || interaction.Currents()[0].CompareTag(tag))
             {
-
+                Debug.Log("Not Allowed!");
             }
             else
             {
-                GenericInteraction current = interaction.Currents()[0];
+                GenericInteraction current = interaction.Currents()[0];//will always be this as the first element 
+                current.SetDesination(transform.position);
                 current.SetParent(this);
-                Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
-                localCell.SetPosition(transform.position);
-                localCell.interactions.Add(current); //adding current to the utensils cell list 
-                StartCoroutine(interaction.OnPutDown(current, localCell, buffer + yDist));
+                //adding current to the utensils cell list 
+                localInteractions.Add(current);
+                StartCoroutine(interaction.OnPutDown(current));
             }           
         }
     }
 
-    public override void CheckForParent(Utensil _parent){}
+    public override void CheckForParent(){  }
+
+    public override void CheckCell(){ base.CheckCell();}
 
     public IEnumerator DelayedPickUp(List<GenericInteraction> interactions)
     {
