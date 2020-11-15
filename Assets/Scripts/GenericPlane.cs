@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenericPlane : MonoBehaviour, IInteract
 {
     [SerializeField]
-    public Cell[,] cells;
+    private Cell[,] cells;
 
     public GameObject dot;
     private Vector3 yDist;
@@ -28,7 +28,7 @@ public class GenericPlane : MonoBehaviour, IInteract
 
     protected virtual void GetCellAndMove(RaycastHit hit)
     {
-        Cell cell = MoveTo(cells, hit.point);
+        Cell cell = SelectCell(cells, hit.point);
         if (cell != null)//position is not taken
         {
             if(interaction.Currents().Count > 1)//if the player is holding more than one item 
@@ -57,7 +57,7 @@ public class GenericPlane : MonoBehaviour, IInteract
     private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell cell) //experimental function that drops items in an ordered fashion
     {
         List<GenericInteraction> tempList = new List<GenericInteraction>(interactions); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
-        tempList[0].SetDesination(cell.Position());
+        AssignInteraction(tempList[0], cell);
         StartCoroutine(interaction.OnPutDown(tempList[0]));//placing the first element down 
         for (int i = 1; i < tempList.Count; i++)//then placing the other items stored 
         {
@@ -68,7 +68,7 @@ public class GenericPlane : MonoBehaviour, IInteract
         yield return null;
     }
 
-    private Cell MoveTo(Cell[,] _cells, Vector3 clickPoint) //function that moves item in hand to cell position 
+    private Cell SelectCell(Cell[,] _cells, Vector3 clickPoint) //function that moves item in hand to cell position 
     {
         float distance = float.MaxValue;
         Cell cell = new Cell();

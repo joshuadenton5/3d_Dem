@@ -37,6 +37,7 @@ public class Utensil : GenericInteraction
         {
             if (localInteractions.Count > 1)
             {
+                base.CheckCell();
                 StartCoroutine(DelayedPickUp(localInteractions));
             }
             else
@@ -64,14 +65,13 @@ public class Utensil : GenericInteraction
 
     public override void CheckForParent(){  }
 
-    public override void CheckCell(){ base.CheckCell();}
-
     public IEnumerator DelayedPickUp(List<GenericInteraction> interactions)
     {
         StartCoroutine(interaction.OnPickUp(interactions[0]));
         for (int i = 1; i < interactions.Count; i++)
         {
             StartCoroutine(interaction.ArcMotionPickUp(interactions[i]));
+            interactions[i].CheckCell();
             yield return new WaitForSeconds(.05f);
         }
         yield return null;

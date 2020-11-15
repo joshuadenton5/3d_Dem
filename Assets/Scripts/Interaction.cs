@@ -65,10 +65,9 @@ public class Interaction : MonoBehaviour
 
     public IEnumerator OnPutDown(GenericInteraction current)
     {
-        Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
         currents.Remove(current);
         current.transform.SetParent(null);
-        yield return Motion.PutDown(current.transform, current.Destination() + buffer, .3f);
+        yield return Motion.PutDown(current.transform, current.Destination() + current.AddedHeight(), .3f);
         current.EnableRb();
         current.SetColliderTrigger(false);
     }
@@ -79,7 +78,7 @@ public class Interaction : MonoBehaviour
         current.SetColliderTrigger(true);
         currents.Add(current);
         current.transform.SetParent(guide.transform);
-        yield return Motion.ArcPickUp(current.transform, .3f);
+        yield return Motion.ArcPickUp(current.transform, .55f);
     }
 
     public IEnumerator ArcMotionPutDown(GenericInteraction current)
@@ -87,7 +86,7 @@ public class Interaction : MonoBehaviour
         Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
         currents.Remove(current);
         current.transform.SetParent(null);
-        yield return Motion.ArcPutDown(current.transform, current.Destination() + buffer, .5f);
+        yield return Motion.ArcPutDown(current.transform, current.Destination() + buffer, .55f);
         current.EnableRb();
         current.SetColliderTrigger(false);
     }

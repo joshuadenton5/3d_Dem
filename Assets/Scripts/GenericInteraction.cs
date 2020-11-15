@@ -15,14 +15,19 @@ public class GenericInteraction : MonoBehaviour,IInteract
     [SerializeField]
     private Utensil parent;
     private Vector3 destination;
+    private Vector3 addedHeight;
 
     public virtual void Start()
     {
+        addedHeight = new Vector3(0, transform.localScale.y / 1.5f, 0);
         interaction = FindObjectOfType<Interaction>();
         collider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
     }
-
+    public Vector3 AddedHeight() {
+        Vector3 extra = addedHeight;
+        return extra;
+    }
     public Vector3 Destination() { return destination; }
     public void SetDesination(Vector3 _destination) { destination = _destination; }
 
