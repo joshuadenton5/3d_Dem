@@ -66,6 +66,7 @@ public class Interaction : MonoBehaviour
     public IEnumerator OnPutDown(GenericInteraction current)
     {
         currents.Remove(current);
+        Debug.Log(current.name);
         current.transform.SetParent(null);
         yield return Motion.PutDown(current.transform, current.Destination() + current.AddedHeight(), .3f);
         current.EnableRb();

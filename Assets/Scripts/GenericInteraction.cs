@@ -95,7 +95,6 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
 
     public bool Equals(GenericInteraction other)
     {
-        //throw new NotImplementedException();
-        return false;
+        return other==this;
     }
 }
