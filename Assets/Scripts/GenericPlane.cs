@@ -9,37 +9,35 @@ public class GenericPlane : MonoBehaviour, IInteract
 
     public GameObject dot;
     private Vector3 yDist;
-    protected Interaction interaction;
 
     public virtual void Start()
     {
         yDist = new Vector3(0, .15f, 0);
-        interaction = FindObjectOfType<Interaction>();
         PlaceCells(transform);
     }
 
-    public virtual void OnLeftMouseButton(RaycastHit hit)
+    public virtual void OnLeftMouseButton(RaycastHit hit, Interaction main)
     {
-        if(interaction.Holding()) //holding an object 
+        if(main.Holding()) //holding an object 
         {
-            GetCellAndMove(hit);
+            GetCellAndMove(hit, main);
         }
     }
 
-    protected virtual void GetCellAndMove(RaycastHit hit)
+    protected virtual void GetCellAndMove(RaycastHit hit, Interaction main)
     {
         Cell cell = SelectCell(cells, hit.point);
         if (cell != null)//position is not taken
         {
-            if(interaction.Currents().Count > 1)//if the player is holding more than one item 
+            if(main.Currents().Count > 1)//if the player is holding more than one item 
             {
-                StartCoroutine(DelayedDrop(interaction.Currents(), cell));
+                StartCoroutine(DelayedDrop(main.Currents(), cell, main));
             }
             else
             {
-                GenericInteraction current = interaction.Currents()[0];
+                GenericInteraction current = main.Currents()[0];
                 AssignInteraction(current, cell);
-                StartCoroutine(interaction.OnPutDown(current));
+                StartCoroutine(main.OnPutDown(current));
             }           
         }
         else
@@ -54,15 +52,15 @@ public class GenericPlane : MonoBehaviour, IInteract
         interaction.SetCell(cell);
     }
 
-    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell cell) //experimental function that drops items in an ordered fashion
+    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell cell, Interaction main) //experimental function that drops items in an ordered fashion
     {
         List<GenericInteraction> tempList = new List<GenericInteraction>(interactions); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
         AssignInteraction(tempList[0], cell);
-        StartCoroutine(interaction.OnPutDown(tempList[0]));//placing the first element down 
+        StartCoroutine(main.OnPutDown(tempList[0]));//placing the first element down 
         for (int i = 1; i < tempList.Count; i++)//then placing the other items stored 
         {
             AssignInteraction(tempList[i], cell);
-            StartCoroutine(interaction.ArcMotionPutDown(tempList[i]));
+            StartCoroutine(main.ArcMotionPutDown(tempList[i]));
             yield return new WaitForSeconds(.05f);
         }
         yield return null;

@@ -10,7 +10,6 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     [SerializeField]
     private Cell surfaceCell;
 
-    protected Interaction interaction;
     public int genericCookTime = 30;
 
     [SerializeField]
@@ -21,7 +20,6 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     public virtual void Start()
     {
         addedHeight = new Vector3(0, transform.localScale.y / 1.5f, 0);
-        interaction = FindObjectOfType<Interaction>();
         collider = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
     }
@@ -52,26 +50,26 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
 
     public virtual void SetParent(Utensil utensil) { parent = utensil; }
 
-    protected virtual void NothingInHand()
+    protected virtual void NothingInHand(Interaction main)
     {
         CheckForParent();
         CheckCell();
-        StartCoroutine(interaction.OnPickUp(this));
+        StartCoroutine(main.OnPickUp(this));
     }
 
-    public virtual void OnLeftMouseButton(RaycastHit hit)
+    public virtual void OnLeftMouseButton(RaycastHit hit, Interaction main)
     {
-        if (!interaction.Holding()) //not holding an object
+        if (!main.Holding()) //not holding an object
         {
-            NothingInHand();
+            NothingInHand(main);
         }
         else
         {
-            CheckForUtensil();
+            CheckForOther();
         }
     }
 
-    public virtual void CheckForUtensil()
+    public virtual void CheckForOther()
     {
         Debug.Log("Can't do that");
     }

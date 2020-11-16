@@ -4,12 +4,12 @@ using UnityEngine;
 
 public interface IInteract
 {
-    void OnLeftMouseButton(RaycastHit hit);
+    void OnLeftMouseButton(RaycastHit hit, Interaction main);
 }
 
 public class Interaction : MonoBehaviour
 {
-    public static Guide guide;
+    private Guide guide;
     private IInteract interact;
 
     [SerializeField]
@@ -30,7 +30,7 @@ public class Interaction : MonoBehaviour
                 interact = hit.collider.GetComponent<IInteract>();
                 if (interact != null)
                 {
-                    interact.OnLeftMouseButton(hit);
+                    interact.OnLeftMouseButton(hit, this);
                     canClick = false;
                     StartCoroutine(DelayClick());
                 }
@@ -66,7 +66,6 @@ public class Interaction : MonoBehaviour
     public IEnumerator OnPutDown(GenericInteraction current)
     {
         currents.Remove(current);
-        Debug.Log(current.name);
         current.transform.SetParent(null);
         yield return Motion.PutDown(current.transform, current.Destination() + current.AddedHeight(), .3f);
         current.EnableRb();

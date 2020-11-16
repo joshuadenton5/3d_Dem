@@ -9,9 +9,9 @@ public class CookingStove : GenericPlane
         base.Start();
     }
 
-    public override void OnLeftMouseButton(RaycastHit hit)
+    public override void OnLeftMouseButton(RaycastHit hit, Interaction main)
     {
-        if(interaction.Holding())
+        if(main.Holding())
         {
             
         }

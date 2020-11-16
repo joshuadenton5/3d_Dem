@@ -12,6 +12,17 @@ public class Board : GenericInteraction
         base.Start();
         PlaceCells(transform, 3);
     }
+
+    public override void OnLeftMouseButton(RaycastHit hit, Interaction main)
+    {
+        base.OnLeftMouseButton(hit, main);
+    }
+    public override void CheckForOther()
+    {
+
+    }
+    public override void CheckForParent(){}
+
     void PlaceCells(Transform trans, int mult) //spawning the cells on load, still working on this one .....
     {
         Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
