@@ -100,8 +100,8 @@ public class GenericPlane : MonoBehaviour, IInteract
         {
             for(int j = 0; j < x; j++)
             {
-                Vector3 startPos = trans.position + (trans.forward * z / 2) - (trans.right * x / 2) + (trans.right / 2) - (transform.forward / 2); //starting at the top right of the object
-                Vector3 newPos = startPos - (transform.forward * i) + (transform.right * j) + top; //moving according to dimensions 
+                Vector3 startPos = trans.position + (trans.forward * z / 2) - (trans.right * x / 2) + (trans.right / 2) - (trans.forward / 2); //starting at the top right of the object
+                Vector3 newPos = startPos - (trans.forward * i) + (trans.right * j) + top; //moving according to dimensions 
                 Cell c = new Cell();
                 c.SetPosition(newPos);
                 cells[j, i] = c;

@@ -12,11 +12,13 @@ public class Board : GenericInteraction
         base.Start();
         PlaceCells(transform, 3);
     }
-    void PlaceCells(Transform trans, int mult) //spawning the cells on load
+    void PlaceCells(Transform trans, int mult) //spawning the cells on load, still working on this one .....
     {
         Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
         int x = Mathf.CeilToInt(trans.localScale.x) * mult;
         int z = Mathf.CeilToInt(trans.localScale.z) * mult;
+        Debug.Log(trans.localScale.x);
+
 
         float flotX = trans.localScale.x;
         float flotZ = trans.localScale.z;
