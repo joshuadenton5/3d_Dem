@@ -9,7 +9,7 @@ public interface IInteract
 
 public class Interaction : MonoBehaviour
 {
-    private Guide guide;
+    private Transform guide;
     private IInteract interact;
 
     [SerializeField]
@@ -18,7 +18,7 @@ public class Interaction : MonoBehaviour
 
     void Start()
     {
-        guide = GetComponentInChildren<Guide>();
+        guide = transform.Find("Guide");
     }
 
     void Update()

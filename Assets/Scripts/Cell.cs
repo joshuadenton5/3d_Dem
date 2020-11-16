@@ -9,13 +9,15 @@ public class Cell
     [SerializeField]
     private bool isTaken;
 
-    public Cell()
+    GameObject parent;
+    Transform transform;
+
+    public Cell(Vector3 _position)
     {
+        position = _position;
     }
-    public void SetPosition(Vector3 pos)
-    {
-        position = pos;
-    }
+
+    public void SetPosition(Vector3 pos) { position = pos; }
 
     public void SetOccupied(bool taken)
     {

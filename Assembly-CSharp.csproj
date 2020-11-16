@@ -68,7 +68,6 @@
     <Compile Include="Assets\Scripts\FirstPersonMove.cs" />
     <Compile Include="Assets\Scripts\GenericInteraction.cs" />
     <Compile Include="Assets\Scripts\GenericPlane.cs" />
-    <Compile Include="Assets\Scripts\Guide.cs" />
     <Compile Include="Assets\Scripts\Interaction.cs" />
     <Compile Include="Assets\Scripts\Motion.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />

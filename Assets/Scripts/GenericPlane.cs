@@ -6,7 +6,6 @@ public class GenericPlane : MonoBehaviour, IInteract
 {
     [SerializeField]
     private Cell[,] cells;
-
     public GameObject dot;
     private Vector3 yDist;
 
@@ -69,7 +68,7 @@ public class GenericPlane : MonoBehaviour, IInteract
     private Cell SelectCell(Cell[,] _cells, Vector3 clickPoint) //function that moves item in hand to cell position 
     {
         float distance = float.MaxValue;
-        Cell cell = new Cell();
+        Cell cell = new Cell(clickPoint);
         foreach (Cell c in _cells)
         {
             float tempDist = Vector3.Distance(clickPoint, c.Position());
@@ -82,9 +81,8 @@ public class GenericPlane : MonoBehaviour, IInteract
         if (!cell.Taken()) //checking if there is already an item placed on the cell
         {
             cell.SetOccupied(true);
-            return cell;
         }
-        return null;
+        return cell;
     }
 
     void PlaceCells(Transform trans) //spawning the cells on load
@@ -100,8 +98,7 @@ public class GenericPlane : MonoBehaviour, IInteract
             {
                 Vector3 startPos = trans.position + (trans.forward * z / 2) - (trans.right * x / 2) + (trans.right / 2) - (trans.forward / 2); //starting at the top right of the object
                 Vector3 newPos = startPos - (trans.forward * i) + (trans.right * j) + top; //moving according to dimensions 
-                Cell c = new Cell();
-                c.SetPosition(newPos);
+                Cell c = new Cell(newPos);
                 cells[j, i] = c;
                 Instantiate(dot, newPos, dot.transform.rotation); //debug
             }

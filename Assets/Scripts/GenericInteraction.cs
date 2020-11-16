@@ -9,11 +9,12 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     private Rigidbody rb;
     [SerializeField]
     private Cell surfaceCell;
+    protected List<GenericInteraction> localInteractions = new List<GenericInteraction>(); //objects in utensil 
 
     public int genericCookTime = 30;
 
     [SerializeField]
-    private Utensil parent;
+    private GenericInteraction parent;
     private Vector3 destination;
     private Vector3 addedHeight;
 
@@ -28,11 +29,29 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         return extra;
     }
     public Vector3 Destination() { return destination; }
+
     public void SetDesination(Vector3 _destination) { destination = _destination; }
 
     public void SetCell(Cell cell) { surfaceCell = cell; }
 
-    public virtual void CheckForParent()
+    public List<GenericInteraction> LocalInteractions()
+    {
+        List<GenericInteraction> tmp = new List<GenericInteraction>(localInteractions);
+        return tmp;
+    }
+
+    public void AddToLocal(GenericInteraction interaction)
+    {
+        if (interaction != null)
+            localInteractions.Add(interaction);
+    }
+    public void RemoveFromLocal(GenericInteraction interaction)
+    {
+        if (interaction != null)
+            localInteractions.Remove(interaction);
+    }
+
+    protected virtual void CheckForParent()
     {
         if (parent != null)
         {
@@ -40,7 +59,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
             parent = null;
         }      
     }
-    public virtual void CheckCell()
+    protected virtual void CheckCell()
     {
         if (surfaceCell != null)
         {
@@ -48,7 +67,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         }
     } 
 
-    public virtual void SetParent(Utensil utensil) { parent = utensil; }
+    public virtual void SetParent(GenericInteraction current) { parent = current; }
 
     protected virtual void NothingInHand(Interaction main)
     {
@@ -63,13 +82,13 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         {
             NothingInHand(main);
         }
-        else
+        else//holding
         {
-            CheckForOther();
+            CheckCanPlace(hit, main);
         }
     }
 
-    public virtual void CheckForOther()
+    protected virtual void CheckCanPlace(RaycastHit hit, Interaction main)
     {
         Debug.Log("Can't do that");
     }
@@ -89,6 +108,18 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     {
         rb.useGravity = true;
         rb.isKinematic = false;
+    }
+
+    public IEnumerator DelayedPickUp(List<GenericInteraction> interactions, Interaction main)
+    {
+        StartCoroutine(main.OnPickUp(interactions[0]));
+        for (int i = 1; i < interactions.Count; i++)
+        {
+            StartCoroutine(main.ArcMotionPickUp(interactions[i]));
+            interactions[i].CheckCell();
+            yield return new WaitForSeconds(.05f);
+        }
+        yield return null;
     }
 
     public bool Equals(GenericInteraction other)

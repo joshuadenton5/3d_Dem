@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Motion : MonoBehaviour
 {
-    public static Guide guide;
+    public static Transform guide;
     private void Start()
     {
-        guide = FindObjectOfType<Guide>();
+        guide = transform.Find("Guide");
     }
 
     public static IEnumerator PickUp(Transform fromPos, float vel)
