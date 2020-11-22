@@ -47,6 +47,7 @@ public class Motion : MonoBehaviour
     public static IEnumerator ArcPickUp(Transform fromPos, GenericInteraction inter, float dur)
     {
         float counter = 0;
+        fromPos.rotation = guide.transform.rotation;
         Vector3 start = fromPos.position;
         Vector3 toPos = inter.GetCell().transform.position;
         Vector3 arc = start + (toPos - start) / 2 + Vector3.up * 1;
@@ -55,27 +56,31 @@ public class Motion : MonoBehaviour
         while (counter < dur)
         {
             counter += Time.deltaTime;
+            toPos = inter.GetCell().transform.position;
             Vector3 m1 = Vector3.Lerp(start, arc, counter / dur);
             Vector3 m2 = Vector3.Lerp(arc, toPos, counter / dur);
-            fromPos.transform.position = Vector3.Lerp(m1, m2, counter / dur);
-            toPos = inter.GetCell().transform.position;
+            fromPos.position = Vector3.Lerp(m1, m2, counter / dur);
             yield return null;
         }
     }
 
-    public static IEnumerator ArcPutDown(Transform fromPos, Vector3 toPos, float vel)
+    public static IEnumerator ArcPutDown(Transform fromPos, GenericInteraction inter, float dur)
     {
         float counter = 0;
+        Quaternion q = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
+        Vector3 toPos = inter.GetCell().transform.position;
         Vector3 start = fromPos.position;
         Vector3 arc = start + (toPos - start) / 2 + Vector3.up * 1;
         float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
-        float time = distance / vel;
-        while (counter < vel)
+        float time = distance / dur;
+        while (counter < dur)
         {
             counter += Time.deltaTime;
-            Vector3 m1 = Vector3.Lerp(start, arc, counter / vel);
-            Vector3 m2 = Vector3.Lerp(arc, toPos, counter / vel);
-            fromPos.transform.position = Vector3.Lerp(m1, m2, counter / vel);
+            toPos = inter.GetCell().transform.position;
+            Vector3 m1 = Vector3.Lerp(start, arc, counter / dur);
+            Vector3 m2 = Vector3.Lerp(arc, toPos, counter / dur);
+            fromPos.position = Vector3.Lerp(m1, m2, counter / dur);
+            fromPos.rotation = Quaternion.Slerp(fromPos.rotation, q, counter / dur);
             yield return null;
         }
     }

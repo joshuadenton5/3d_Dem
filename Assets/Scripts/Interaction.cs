@@ -83,10 +83,9 @@ public class Interaction : MonoBehaviour
 
     public IEnumerator ArcMotionPutDown(GenericInteraction current)
     {
-        Vector3 buffer = new Vector3(0, current.transform.localScale.y / 2f, 0);
         currents.Remove(current);
         current.transform.SetParent(null);
-        yield return Motion.ArcPutDown(current.transform, current.Destination() + buffer, .55f);
+        yield return Motion.ArcPutDown(current.transform, current, .55f);
         current.EnableRb();
         current.SetColliderTrigger(false);
     }

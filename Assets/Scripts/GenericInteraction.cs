@@ -121,7 +121,6 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
             StartCoroutine(main.ArcMotionPickUp(interactions[i]));
             yield return null;
         }
-        yield return null;
     }
 
     public bool Equals(GenericInteraction other)

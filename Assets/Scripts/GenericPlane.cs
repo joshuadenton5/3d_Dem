@@ -55,12 +55,12 @@ public class GenericPlane : MonoBehaviour, IInteract
     {
         List<GenericInteraction> tempList = new List<GenericInteraction>(interactions); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
         AssignInteraction(tempList[0], cell);
-        yield return StartCoroutine(main.OnPutDown(tempList[0]));//placing the first element down 
+        StartCoroutine(main.OnPutDown(tempList[0]));//placing the first element down 
         for (int i = 1; i < tempList.Count; i++)//then placing the other items stored 
         {
             tempList[i].SetDesination(tempList[i].GetCell().transform.position);
             StartCoroutine(main.ArcMotionPutDown(tempList[i]));
-            yield return new WaitForSeconds(.05f);
+            yield return null;
         }
         yield return null;
     }

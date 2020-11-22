@@ -22,7 +22,7 @@ public class Utensil : GenericInteraction
 
     protected override void NothingInHand(Interaction main)
     {
-        if (localInteractions.Count > 1)//object is held
+        if (localInteractions.Count > 1)
         {
             base.CheckCell();
             StartCoroutine(DelayedPickUp(localInteractions, main));
@@ -44,7 +44,8 @@ public class Utensil : GenericInteraction
         else
         {
             GenericInteraction current = main.Currents()[0];//will always be this as the first element 
-            current.SetDesination(transform.position);
+            current.SetDesination(transform.position + yDist);
+            current.SetCell(localCell);
             current.SetParent(this);
             localInteractions.Add(current);
             StartCoroutine(main.OnPutDown(current));
