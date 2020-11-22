@@ -5,14 +5,14 @@ using UnityEngine;
 public class GenericPlane : MonoBehaviour, IInteract
 {
     [SerializeField]
-    private Cell[,] cells;
+    private DynamicCell[,] cells;
     public GameObject dot;
     private Vector3 yDist;
 
     public virtual void Start()
     {
         yDist = new Vector3(0, .15f, 0);
-        PlaceCells(transform);
+        PlaceCells(transform, 1);
     }
 
     public virtual void OnLeftMouseButton(RaycastHit hit, Interaction main)
@@ -25,7 +25,7 @@ public class GenericPlane : MonoBehaviour, IInteract
 
     protected virtual void GetCellAndMove(RaycastHit hit, Interaction main)
     {
-        Cell cell = SelectCell(cells, hit.point);
+        DynamicCell cell = GetPosition(cells, hit.point);
         if (cell != null)//position is not taken
         {
             if(main.Currents().Count > 1)//if the player is holding more than one item 
@@ -45,13 +45,13 @@ public class GenericPlane : MonoBehaviour, IInteract
         }       
     }
 
-    void AssignInteraction(GenericInteraction interaction, Cell cell)
+    void AssignInteraction(GenericInteraction interaction, DynamicCell cell)
     {
-        interaction.SetDesination(cell.Position());
+        interaction.SetDesination(cell.transform.position);
         interaction.SetCell(cell);
     }
 
-    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, Cell cell, Interaction main) //experimental function that drops items in an ordered fashion
+    private IEnumerator DelayedDrop(List<GenericInteraction> interactions, DynamicCell cell, Interaction main) //experimental function that drops items in an ordered fashion
     {
         List<GenericInteraction> tempList = new List<GenericInteraction>(interactions); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
         AssignInteraction(tempList[0], cell);
@@ -65,33 +65,66 @@ public class GenericPlane : MonoBehaviour, IInteract
         yield return null;
     }
 
-    private Cell SelectCell(Cell[,] _cells, Vector3 clickPoint) //function that moves item in hand to cell position 
+    DynamicCell GetPosition(DynamicCell[,] dynamicCells, Vector3 hitPoint)
     {
         float distance = float.MaxValue;
-        Cell cell = new Cell(clickPoint);
-        foreach (Cell c in _cells)
+        DynamicCell cell = null;
+        foreach (DynamicCell pos in dynamicCells)
         {
-            float tempDist = Vector3.Distance(clickPoint, c.Position());
+            float tempDist = Vector3.Distance(hitPoint, pos.transform.position);
             if (tempDist < distance)
             {
                 distance = tempDist;
-                cell = c;
+                cell = pos;
             }
         }
-        if (!cell.Taken()) //checking if there is already an item placed on the cell
+        if (!cell.Taken())
         {
-            cell.SetOccupied(true);
+            cell.SetTaken(true);
+            return cell;
         }
-        return cell;
+        return null;
     }
 
-    void PlaceCells(Transform trans) //spawning the cells on load
+    int GetDec(float input)
+    {
+        if (input % 1 == 0)
+            return 1;
+        return 2;
+    }
+
+    void PlaceCells(Transform trans, int mult) //spawning the cells on load, still working on this one .....
+    {
+        int decX = GetDec(trans.localScale.x);
+        int decZ = GetDec(trans.localScale.z);
+        Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
+        int x = Mathf.CeilToInt(trans.localScale.x) * mult;
+        int z = Mathf.CeilToInt(trans.localScale.z) * mult;
+        cells = new DynamicCell[x, z];
+
+        for (int i = 0; i < z; i++)
+        {
+            for (int j = 0; j < x; j++)
+            {
+                Vector3 startPos = trans.position + (trans.forward / mult * z / 2 / decZ) - (trans.right / mult * x / 2 / decX) + (trans.right / mult / 2 / decX) - (trans.forward / mult / 2 / decZ); //starting at the top right of the object
+                Vector3 newPos = startPos - (trans.forward / mult / decZ * i) + (trans.right / mult / decX * j) + top; //moving according to dimensions 
+
+                GameObject obj = Instantiate(dot, newPos, dot.transform.rotation); //debug
+                obj.transform.SetParent(trans);//debug 
+
+                DynamicCell cell = obj.AddComponent<DynamicCell>();
+                cells[j, i] = cell;
+            }
+        }
+    }
+
+    /*void PlaceCells(Transform trans) //spawning the cells on load
     {
         Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
         float x = trans.localScale.x;
         float z = trans.localScale.z;
 
-        cells = new Cell[(int)x, (int)z];
+        cells = new DynamicCell[(int)x, (int)z];
         for(int i = 0; i < z; i++)
         {
             for(int j = 0; j < x; j++)
@@ -103,7 +136,7 @@ public class GenericPlane : MonoBehaviour, IInteract
                 Instantiate(dot, newPos, dot.transform.rotation); //debug
             }
         }
-    }
+    }*/
 
     //unused functions
 

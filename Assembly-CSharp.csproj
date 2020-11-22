@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\Board.cs" />
     <Compile Include="Assets\Scripts\Cell.cs" />
     <Compile Include="Assets\Scripts\CookingStove.cs" />
+    <Compile Include="Assets\Scripts\DynamicCell.cs" />
     <Compile Include="Assets\Scripts\FirstPersonMove.cs" />
     <Compile Include="Assets\Scripts\GenericInteraction.cs" />
     <Compile Include="Assets\Scripts\GenericPlane.cs" />

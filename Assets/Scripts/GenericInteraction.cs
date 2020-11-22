@@ -8,7 +8,8 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     private new Collider collider;
     private Rigidbody rb;
     [SerializeField]
-    private Cell surfaceCell;
+    private DynamicCell surfaceCell;
+    [SerializeField]
     protected List<GenericInteraction> localInteractions = new List<GenericInteraction>(); //objects in utensil 
 
     public int genericCookTime = 30;
@@ -32,7 +33,9 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
 
     public void SetDesination(Vector3 _destination) { destination = _destination; }
 
-    public void SetCell(Cell cell) { surfaceCell = cell; }
+    public void SetCell(DynamicCell cell) { surfaceCell = cell; }
+
+    public DynamicCell GetCell() { return surfaceCell; }
 
     public List<GenericInteraction> LocalInteractions()
     {
@@ -63,7 +66,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     {
         if (surfaceCell != null)
         {
-            surfaceCell.SetOccupied(false);
+            surfaceCell.SetTaken(false);
         }
     } 
 
@@ -116,7 +119,6 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         for (int i = 1; i < interactions.Count; i++)
         {
             StartCoroutine(main.ArcMotionPickUp(interactions[i]));
-            interactions[i].CheckCell();
             yield return new WaitForSeconds(.05f);
         }
         yield return null;
