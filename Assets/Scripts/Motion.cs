@@ -42,31 +42,23 @@ public class Motion : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(.1f);
-        //newColider = false;
-        //isMoving = false;
     }
 
-    public static IEnumerator Follow(Transform fromPos, Vector3 toFollow, float dur)
+    public static IEnumerator ArcPickUp(Transform fromPos, GenericInteraction inter, float dur)
     {
         float counter = 0;
         Vector3 start = fromPos.position;
-        while()
-        yield return null;
-    }
-
-    public static IEnumerator ArcPickUp(Transform fromPos, float dur)
-    {
-        float counter = 0;
-        Vector3 start = fromPos.position;
-        Vector3 arc = start + (guide.transform.position - start) / 2 + Vector3.up * 1;
-        float distance = Vector3.Distance(fromPos.position, guide.transform.position); //distance - vel=distance/time
+        Vector3 toPos = inter.GetCell().transform.position;
+        Vector3 arc = start + (toPos - start) / 2 + Vector3.up * 1;
+        float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
         float time = distance / dur;
         while (counter < dur)
         {
             counter += Time.deltaTime;
             Vector3 m1 = Vector3.Lerp(start, arc, counter / dur);
-            Vector3 m2 = Vector3.Lerp(arc, guide.transform.position, counter / dur);
+            Vector3 m2 = Vector3.Lerp(arc, toPos, counter / dur);
             fromPos.transform.position = Vector3.Lerp(m1, m2, counter / dur);
+            toPos = inter.GetCell().transform.position;
             yield return null;
         }
     }

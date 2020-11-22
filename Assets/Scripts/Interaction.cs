@@ -78,7 +78,7 @@ public class Interaction : MonoBehaviour
         current.SetColliderTrigger(true);
         currents.Add(current);
         current.transform.SetParent(guide.transform);
-        yield return Motion.ArcPickUp(current.transform, .55f);
+        yield return Motion.ArcPickUp(current.transform, current, .55f);
     }
 
     public IEnumerator ArcMotionPutDown(GenericInteraction current)

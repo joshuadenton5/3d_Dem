@@ -119,7 +119,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         for (int i = 1; i < interactions.Count; i++)
         {
             StartCoroutine(main.ArcMotionPickUp(interactions[i]));
-            yield return new WaitForSeconds(.05f);
+            yield return null;
         }
         yield return null;
     }

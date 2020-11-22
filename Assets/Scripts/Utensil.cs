@@ -5,12 +5,14 @@ using UnityEngine;
 public class Utensil : GenericInteraction
 {
     private Vector3 yDist;
+    private DynamicCell localCell;
 
     public override void Start()
     {
         base.Start();
         yDist = new Vector3(0, .15f, 0);
         localInteractions.Add(this);
+        localCell = gameObject.AddComponent<DynamicCell>();
     }    
 
     override public void OnLeftMouseButton(RaycastHit hit, Interaction main)
@@ -20,7 +22,7 @@ public class Utensil : GenericInteraction
 
     protected override void NothingInHand(Interaction main)
     {
-        if (localInteractions.Count > 1)//more than one object in hand
+        if (localInteractions.Count > 1)//object is held
         {
             base.CheckCell();
             StartCoroutine(DelayedPickUp(localInteractions, main));
