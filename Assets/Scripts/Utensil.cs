@@ -20,7 +20,7 @@ public class Utensil : GenericInteraction
         base.OnLeftMouseButton(hit, main);
     }
 
-    protected override void NothingInHand(Interaction main)
+    protected override void DefaultInteraction(Interaction main)
     {
         if (localInteractions.Count > 1)
         {
@@ -29,7 +29,7 @@ public class Utensil : GenericInteraction
         }
         else //only one object in hand
         {
-            base.NothingInHand(main);
+            base.DefaultInteraction(main);
         }
     }
 

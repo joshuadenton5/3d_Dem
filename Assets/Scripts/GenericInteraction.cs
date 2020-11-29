@@ -72,7 +72,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
 
     public virtual void SetParent(GenericInteraction current) { parent = current; }
 
-    protected virtual void NothingInHand(Interaction main)
+    protected virtual void DefaultInteraction(Interaction main)
     {
         CheckForParent();
         CheckCell();
@@ -83,7 +83,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     {
         if (!main.Holding()) //not holding an object
         {
-            NothingInHand(main);
+            DefaultInteraction(main);
         }
         else//holding
         {
@@ -94,6 +94,16 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     protected virtual void CheckCanPlace(RaycastHit hit, Interaction main)
     {
         Debug.Log("Can't do that");
+    } 
+
+    public IEnumerator DelayedPickUp(List<GenericInteraction> interactions, Interaction main)
+    {
+        StartCoroutine(main.OnPickUp(interactions[0]));
+        for (int i = 1; i < interactions.Count; i++)
+        {
+            StartCoroutine(main.ArcMotionPickUp(interactions[i]));
+            yield return null;
+        }
     }
 
     public void SetColliderTrigger(bool set)
@@ -113,18 +123,9 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         rb.isKinematic = false;
     }
 
-    public IEnumerator DelayedPickUp(List<GenericInteraction> interactions, Interaction main)
-    {
-        StartCoroutine(main.OnPickUp(interactions[0]));
-        for (int i = 1; i < interactions.Count; i++)
-        {
-            StartCoroutine(main.ArcMotionPickUp(interactions[i]));
-            yield return null;
-        }
-    }
-
     public bool Equals(GenericInteraction other)
     {
         return other==this;
     }
+
 }

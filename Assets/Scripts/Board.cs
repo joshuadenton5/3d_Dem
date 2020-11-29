@@ -19,7 +19,7 @@ public class Board : GenericInteraction
         base.OnLeftMouseButton(hit, main);
     }
 
-    protected override void NothingInHand(Interaction main)
+    protected override void DefaultInteraction(Interaction main)
     {
         if (localInteractions.Count > 1)//more than one object in hand
         {
@@ -28,7 +28,7 @@ public class Board : GenericInteraction
         }
         else //only one object in hand
         {
-            base.NothingInHand(main);
+            base.DefaultInteraction(main);
         }
     }
 
