@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     private GI_Events[] allInteractables;
-    public Image retical;
+    [SerializeField] private Image retical;
 
     void Start()
     {
@@ -21,11 +19,11 @@ public class UIManager : MonoBehaviour
     {
         foreach(GI_Events event_ in allInteractables)
         {
-            event_.OnLook += ChangeColour;
+            event_.OnLook += ChangeReticalColour;
         }
     }
 
-    void ChangeColour(Color col)
+    void ChangeReticalColour(Color col)
     {
         retical.color = col;
     }

@@ -62,19 +62,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Board.cs" />
-    <Compile Include="Assets\Scripts\Cell.cs" />
-    <Compile Include="Assets\Scripts\CookingStove.cs" />
-    <Compile Include="Assets\Scripts\DynamicCell.cs" />
-    <Compile Include="Assets\Scripts\FirstPersonMove.cs" />
-    <Compile Include="Assets\Scripts\GenericInteraction.cs" />
-    <Compile Include="Assets\Scripts\GenericPlane.cs" />
-    <Compile Include="Assets\Scripts\GI_Events.cs" />
     <Compile Include="Assets\Scripts\Interaction.cs" />
     <Compile Include="Assets\Scripts\Motion.cs" />
-    <Compile Include="Assets\Scripts\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\UIManager.cs" />
-    <Compile Include="Assets\Scripts\Utensil.cs" />
+    <Compile Include="Assets\Scripts\Movement\FirstPersonMove.cs" />
+    <Compile Include="Assets\Scripts\Movement\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Objects\Board.cs" />
+    <Compile Include="Assets\Scripts\Objects\CookingStove.cs" />
+    <Compile Include="Assets\Scripts\Objects\GenericInteraction.cs" />
+    <Compile Include="Assets\Scripts\Objects\GenericPlane.cs" />
+    <Compile Include="Assets\Scripts\Objects\Utensil.cs" />
+    <Compile Include="Assets\Scripts\Placement Cell\Cell.cs" />
+    <Compile Include="Assets\Scripts\Placement Cell\DynamicCell.cs" />
+    <Compile Include="Assets\Scripts\UI Scripts\Board_Events.cs" />
+    <Compile Include="Assets\Scripts\UI Scripts\GI_Events.cs" />
+    <Compile Include="Assets\Scripts\UI Scripts\Plane_Events.cs" />
+    <Compile Include="Assets\Scripts\UI Scripts\UIManager.cs" />
     <None Include="Assets\Shaders\OutLine.shader" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/JD/3d_Dem/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

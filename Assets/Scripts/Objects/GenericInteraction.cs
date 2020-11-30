@@ -96,7 +96,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
         Debug.Log("Can't do that");
     } 
 
-    public IEnumerator DelayedPickUp(List<GenericInteraction> interactions, Interaction main)
+    protected IEnumerator DelayedPickUp(List<GenericInteraction> interactions, Interaction main)
     {
         StartCoroutine(main.OnPickUp(interactions[0]));
         for (int i = 1; i < interactions.Count; i++)
@@ -104,6 +104,82 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
             StartCoroutine(main.ArcMotionPickUp(interactions[i]));
             yield return null;
         }
+    }
+
+    protected DynamicCell GetPosition(DynamicCell[,] dynamicCells, Vector3 hitPoint)
+    {
+        float distance = float.MaxValue;
+        DynamicCell cell = null;
+        foreach (DynamicCell pos in dynamicCells)
+        {
+            float tempDist = Vector3.Distance(hitPoint, pos.transform.position);
+            if (tempDist < distance)
+            {
+                distance = tempDist;
+                cell = pos;
+            }
+        }
+        if (!cell.Taken())
+        {
+            cell.SetTaken(true);
+            return cell;
+        }
+        return null;
+    }
+
+    protected void AssignInteraction(GenericInteraction interaction, DynamicCell cell)
+    {
+        interaction.SetDesination(cell.transform.position);
+        interaction.SetCell(cell);
+    }
+
+    protected IEnumerator DelayedDrop(List<GenericInteraction> interactions, DynamicCell cell, Interaction main) //experimental function that drops items in an ordered fashion
+    {
+        List<GenericInteraction> tempList = new List<GenericInteraction>(interactions); //creating a temp list as 'interactions' is modified in the 'OnPutDown' function 
+        AssignInteraction(tempList[0], cell);
+        StartCoroutine(main.OnPutDown(tempList[0]));//placing the first element down 
+        for (int i = 1; i < tempList.Count; i++)//then placing the other items stored 
+        {
+            tempList[i].SetDesination(tempList[i].GetCell().transform.position);
+            StartCoroutine(main.ArcMotionPutDown(tempList[i]));
+            yield return null;
+        }
+        yield return null;
+    }
+
+    public virtual bool CellAvailable() { return false; }
+
+    protected DynamicCell[,] InitialiseCells(Transform trans, GameObject dot, int mult) //spawning the cells on load, still working on this one .....
+    {
+        int decX = GetDec(trans.localScale.x);
+        int decZ = GetDec(trans.localScale.z);
+        Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
+        int x = Mathf.CeilToInt(trans.localScale.x) * mult;
+        int z = Mathf.CeilToInt(trans.localScale.z) * mult;
+        DynamicCell[,] cells = new DynamicCell[x, z];
+
+        for (int i = 0; i < z; i++)
+        {
+            for (int j = 0; j < x; j++)
+            {
+                Vector3 startPos = trans.position + (trans.forward / mult * z / 2 / decZ) - (trans.right / mult * x / 2 / decX) + (trans.right / mult / 2 / decX) - (trans.forward / mult / 2 / decZ); //starting at the top right of the object
+                Vector3 newPos = startPos - (trans.forward / mult / decZ * i) + (trans.right / mult / decX * j) + top; //moving according to dimensions 
+
+                GameObject obj = Instantiate(dot, newPos, dot.transform.rotation); //debug
+                obj.transform.SetParent(trans);//debug 
+
+                DynamicCell cell = obj.AddComponent<DynamicCell>();
+                cells[j, i] = cell;
+            }
+        }
+        return cells;
+    }
+
+    int GetDec(float input)
+    {
+        if (input % 1 == 0)
+            return 1;
+        return 2;
     }
 
     public void SetColliderTrigger(bool set)

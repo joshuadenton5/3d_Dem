@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CookingStove : GenericPlane
+public class CookingStove : GenericInteraction
 {
     public override void Start()
     {
-        base.Start();
+       //base.Start();      
     }
 
     public override void OnLeftMouseButton(RaycastHit hit, Interaction main)
