@@ -56,7 +56,7 @@ public class Motion : MonoBehaviour
         while (counter < dur)
         {
             counter += Time.deltaTime;
-            toPos = inter.GetCell().transform.position;
+            toPos = inter.GetCell().transform.position + new Vector3(0, inter.transform.localScale.y/2, 0);
             Vector3 m1 = Vector3.Lerp(start, arc, counter / dur);
             Vector3 m2 = Vector3.Lerp(arc, toPos, counter / dur);
             fromPos.position = Vector3.Lerp(m1, m2, counter / dur);

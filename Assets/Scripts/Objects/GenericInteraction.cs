@@ -148,7 +148,7 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
     {
         int decX = GetDec(trans.localScale.x);
         int decZ = GetDec(trans.localScale.z);
-        Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
+        Vector3 top = new Vector3(0, (trans.localScale.y / 2) , 0);
         int x = Mathf.CeilToInt(trans.localScale.x) * multX;
         int z = Mathf.CeilToInt(trans.localScale.z) * multZ;
         DynamicCell[,] cells = new DynamicCell[x, z];
@@ -163,7 +163,6 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
                 GameObject test = new GameObject("cellPoint", typeof(DynamicCell));
                 test.transform.position = newPos;
                 test.transform.SetParent(trans);
-
                 cells[j, i] = test.GetComponent<DynamicCell>();
             }
         }

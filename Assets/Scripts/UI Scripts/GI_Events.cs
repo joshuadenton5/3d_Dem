@@ -19,7 +19,7 @@ public class GI_Events : MonoBehaviour
 
     protected virtual void IsHolding()
     {
-        OnLook(Color.red, name);
+        SelectColour("R");
     }
 
     protected virtual void NotHolding()
