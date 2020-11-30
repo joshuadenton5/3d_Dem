@@ -7,14 +7,9 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
 {
     private new Collider collider;
     private Rigidbody rb;
-    [SerializeField]
     private DynamicCell surfaceCell;
-    [SerializeField]
-    protected List<GenericInteraction> localInteractions = new List<GenericInteraction>(); //objects in utensil 
+    [SerializeField] protected List<GenericInteraction> localInteractions = new List<GenericInteraction>(); //objects in utensil 
 
-    public int genericCookTime = 30;
-
-    [SerializeField]
     private GenericInteraction parent;
     private Vector3 destination;
     private Vector3 addedHeight;
@@ -149,27 +144,27 @@ public class GenericInteraction : MonoBehaviour,IInteract, IEquatable<GenericInt
 
     public virtual bool CellAvailable() { return false; }
 
-    protected DynamicCell[,] InitialiseCells(Transform trans, GameObject dot, int mult) //spawning the cells on load, still working on this one .....
+    protected DynamicCell[,] InitialiseCells(Transform trans, GameObject dot, int multX, int multZ) //spawning the cells on load, still working on this one .....
     {
         int decX = GetDec(trans.localScale.x);
         int decZ = GetDec(trans.localScale.z);
         Vector3 top = new Vector3(0, (trans.localScale.y / 2) + .02f, 0);
-        int x = Mathf.CeilToInt(trans.localScale.x) * mult;
-        int z = Mathf.CeilToInt(trans.localScale.z) * mult;
+        int x = Mathf.CeilToInt(trans.localScale.x) * multX;
+        int z = Mathf.CeilToInt(trans.localScale.z) * multZ;
         DynamicCell[,] cells = new DynamicCell[x, z];
 
         for (int i = 0; i < z; i++)
         {
             for (int j = 0; j < x; j++)
             {
-                Vector3 startPos = trans.position + (trans.forward / mult * z / 2 / decZ) - (trans.right / mult * x / 2 / decX) + (trans.right / mult / 2 / decX) - (trans.forward / mult / 2 / decZ); //starting at the top right of the object
-                Vector3 newPos = startPos - (trans.forward / mult / decZ * i) + (trans.right / mult / decX * j) + top; //moving according to dimensions 
+                Vector3 startPos = trans.position + (trans.forward / multZ * z / 2 / decZ) - (trans.right / multX * x / 2 / decX) + (trans.right / multX / 2 / decX) - (trans.forward / multZ / 2 / decZ); //starting at the top right of the object
+                Vector3 newPos = startPos - (trans.forward / multZ / decZ * i) + (trans.right / multX / decX * j) + top; //moving according to dimensions 
 
-                GameObject obj = Instantiate(dot, newPos, dot.transform.rotation); //debug
-                obj.transform.SetParent(trans);//debug 
+                GameObject test = new GameObject("cellPoint", typeof(DynamicCell));
+                test.transform.position = newPos;
+                test.transform.SetParent(trans);
 
-                DynamicCell cell = obj.AddComponent<DynamicCell>();
-                cells[j, i] = cell;
+                cells[j, i] = test.GetComponent<DynamicCell>();
             }
         }
         return cells;

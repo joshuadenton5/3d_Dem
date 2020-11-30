@@ -5,6 +5,7 @@ public class UIManager : MonoBehaviour
 {
     private GI_Events[] allInteractables;
     [SerializeField] private Image retical;
+    [SerializeField] private Text onScreenText;
 
     void Start()
     {
@@ -12,6 +13,7 @@ public class UIManager : MonoBehaviour
         Cursor.visible = true;
         allInteractables = FindObjectsOfType<GI_Events>();
         retical.color = Color.grey;
+        onScreenText.text = "";
         SetUpListeners();
     }
 
@@ -23,8 +25,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void ChangeReticalColour(Color col)
+    void ChangeReticalColour(Color col, string text)
     {
         retical.color = col;
+        onScreenText.text = text;
     }
 }

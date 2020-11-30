@@ -8,7 +8,7 @@ public class GI_Events : MonoBehaviour
 {
     protected Interaction interaction;
     protected GenericInteraction genericInteraction;
-    public delegate void OnSee(Color val);
+    public delegate void OnSee(Color val, string text);
     public event OnSee OnLook;
 
     protected virtual void Start()
@@ -19,7 +19,7 @@ public class GI_Events : MonoBehaviour
 
     protected virtual void IsHolding()
     {
-        OnLook(Color.red);
+        OnLook(Color.red, name);
     }
 
     protected virtual void NotHolding()
@@ -32,13 +32,13 @@ public class GI_Events : MonoBehaviour
         switch (letter)
         {
             case "G":
-                OnLook(Color.green);
+                OnLook(Color.green, name);
                 break;
             case "R":
-                OnLook(Color.red);
+                OnLook(Color.red, name);
                 break;
             default:
-                OnLook(Color.grey);
+                OnLook(Color.grey, "");
                 break;
         }
     }

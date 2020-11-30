@@ -50,7 +50,7 @@ public class Motion : MonoBehaviour
         fromPos.rotation = guide.transform.rotation;
         Vector3 start = fromPos.position;
         Vector3 toPos = inter.GetCell().transform.position;
-        Vector3 arc = start + (toPos - start) / 2 + Vector3.up * 1;
+        Vector3 arc = start + (toPos - start) / 2 + Vector3.up * .5f;
         float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
         float time = distance / dur;
         while (counter < dur)
@@ -70,7 +70,7 @@ public class Motion : MonoBehaviour
         Quaternion q = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
         Vector3 toPos = inter.GetCell().transform.position;
         Vector3 start = fromPos.position;
-        Vector3 arc = start + (toPos - start) / 2 + Vector3.up * 1;
+        Vector3 arc = start + (toPos - start) / 2 + Vector3.up * .5f;
         float distance = Vector3.Distance(fromPos.position, toPos); //distance - vel=distance/time
         float time = distance / dur;
         while (counter < dur)

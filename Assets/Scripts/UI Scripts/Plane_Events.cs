@@ -30,5 +30,9 @@ public class Plane_Events : GI_Events
         {
             SelectColour("G");
         }
+        else
+        {
+            SelectColour("R");
+        }
     }
 }

@@ -6,11 +6,12 @@ public class GenericPlane : GenericInteraction
     private DynamicCell[,] cells;
     public GameObject dot;
     private Vector3 yDist;
+    [SerializeField] private int positionFactorX = 1, positionFactorZ = 1;
 
     public override void Start()
     {
         yDist = new Vector3(0, .15f, 0);
-        cells = InitialiseCells(transform, dot, 1);
+        cells = InitialiseCells(transform, dot, positionFactorX, positionFactorZ);
     }
 
     public override void OnLeftMouseButton(RaycastHit hit, Interaction main)

@@ -8,7 +8,7 @@ public class Board : GenericInteraction
     public override void Start()
     {
         base.Start();
-        dynamicPositions = InitialiseCells(transform, dot, 2);
+        dynamicPositions = InitialiseCells(transform, dot, 2, 2);
         localInteractions.Add(this);
     }
 

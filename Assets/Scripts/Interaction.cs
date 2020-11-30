@@ -92,6 +92,7 @@ public class Interaction : MonoBehaviour
  
     public void OnDrop()
     {
+        currents[0].LocalInteractions().Clear();
         foreach(GenericInteraction i in currents)
         {
             i.EnableRb();
